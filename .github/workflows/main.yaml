@@ -24,4 +24,10 @@ jobs:
             --exclude README.md \
             --region us-east-1 \
             ./ s3://kjr-amber-content/sites/calculator.amberharmon.com/
+
+      - name: Clear CDN
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
           aws cloudfront create-invalidation --distribution-id E3B4M55OTCFY71 --paths "/*"
