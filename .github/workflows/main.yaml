@@ -19,5 +19,5 @@ jobs:
           aws s3 cp \
             --recursive \
             --region us-east-1 \
-            ./ s3://kjr-amber-content/sites/amberharmon.com/
-          aws cloudfront create-invalidation --distribution-id E1MT4RZDZOO3YR --paths "/*"
+            ./ s3://kjr-amber-content/sites/calculator.amberharmon.com/
+          aws cloudfront create-invalidation --distribution-id E3B4M55OTCFY71 --paths "/*"
