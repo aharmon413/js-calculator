@@ -17,7 +17,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws s3 sync \
-            --region us-east-1 \ 
             --delete \
             --exclude ".git/*" \
             --exclude .gitignore \
