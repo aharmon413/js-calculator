@@ -1,0 +1,23 @@
+name: S3 Deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@master
+
+      - name: Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp \
+            --recursive \
+            --region us-east-1 \
+            ./ s3://kjr-amber-content/sites/amberharmon.com/
+          aws cloudfront create-invalidation --distribution-id E1MT4RZDZOO3YR --paths "/*"
