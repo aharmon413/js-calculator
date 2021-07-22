@@ -1,0 +1,75 @@
+/* VT323 and Ubuntu fonts */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@500&display=swap');
+
+:root {
+    font-size:100%; /* 16px on most browsers */
+    box-sizing:border-box;
+    --teal:rgba(41, 160, 177, 1);
+    --teal-green:rgba(15, 85, 87, 1);
+    --spearmint:rgba(152, 215, 194, 1);
+    --mint:rgba(221, 255, 231, 1);
+}
+* {
+    margin:0;
+    padding:0;
+    box-sizing:inherit;
+}
+body {
+    background-color:var(--spearmint);
+}
+.base {
+    background-color:var(--teal);
+    width:20.3125em; /* 325px */
+    height:31.25em; /* 500px */
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    border-radius:2.1875em; /* 35px */
+}
+.display {
+    background-color:var(--mint);
+    font-family:'VT323', monospace;
+    width:17.5em; /* 280px */
+    height:6.25em; /* 100px */
+    margin:1.25em auto 0 auto; /* 20px */
+    border-radius:2.1875em 2.1875em 0 0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-end;
+}
+.input, .history {
+    color:var(--teal-green);
+    margin-right:1.25rem;
+}
+.input {
+    font-size:3.375em; /* 54px */
+}
+.buttons {
+    width:17.5em;
+    margin:1.5625em auto; /* 25px */
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    grid-template-rows:repeat(5, 1fr);
+    column-gap:1.5625em;
+    row-gap:1.25em;
+}
+button {
+    background-color:var(--teal-green);
+    color:var(--mint);
+    font-family:'Ubuntu', sans-serif;
+    font-size:1.5em;
+    border:none;
+    border-radius:5px;
+    width:3.125rem; /* 50px */
+    height:3.125rem; /* 50px */
+    justify-self:center;
+    cursor:pointer;
+}
+.clear {
+    width:7.8125rem; /* 125px*/
+    grid-column:1/3;
+}
