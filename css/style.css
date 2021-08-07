@@ -65,7 +65,7 @@ button {
     background-color:var(--teal-green);
     color:var(--mint);
     font-family:'Ubuntu', sans-serif;
-    font-size:1.6em;
+    font-size:1.5em;
     border:none;
     border-radius:5px;
     width:3.4375rem; /* 60px */

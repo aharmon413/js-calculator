@@ -1,4 +1,4 @@
-let num1 = '', num2 = '', operator = '', total = '';
+let num1 = '', num2 = '', operator = '', total = '', history = '';
 
 $(document).ready(function() {
     $('button').on('click', function(e) {
@@ -8,10 +8,11 @@ $(document).ready(function() {
                 handleNumber(btn);
                 break;
             case 'operator':
+            case 'equals':
                 handleOperator(btn);
                 break;
             case 'clear':
-                clear()
+                clearAll()
                 break;
         }
     })
@@ -25,14 +26,17 @@ function handleNumber(num) {
         num2 += num;
         updateDisplay(num2);
     }
+    updateHistory(num);
 }
 
 function handleOperator(opr) {
     if (operator === '') {
         operator = opr;
-    } else {
+        updateHistory(operator);
+    } else if (history.substr(-1) != ' ') {
         handleTotal();
         operator = opr;
+        updateHistory(operator);
     }
 }
 
@@ -62,12 +66,22 @@ function updateDisplay(val) {
     $('.input').text(val);
 }
 
+function updateHistory(val) {
+    if (Number.isInteger(+val)) {
+        history += val;
+        $('.history').text(history);
+    } else if (val != '=') {
+        $('.history').text(history += ` ${val} `);
+    }
+}
+
 function updateVariables() {
     num1 = total;
     num2 = '';
 }
 
-function clear() {
-    num1 = '', num2 = '', operator = '', total = '';
+function clearAll() {
+    num1 = '', num2 = '', operator = '', total = '', history = '';
     updateDisplay('0');
+    $('.history').text('0');
 }
