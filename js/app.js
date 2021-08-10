@@ -1,4 +1,4 @@
-let num1 = '', num2 = '', operator = '', total = '', history = '';
+let num1 = '', num2 = '', operator = '', total = '', history = '', clear_history = false;
 
 $(document).ready(function() {
     $('button').on('click', function(e) {
@@ -37,6 +37,7 @@ function handleOperator(opr) {
         handleTotal();
         operator = opr;
         updateHistory(operator);
+        clear_history = (operator === '=');
     }
 }
 
@@ -67,6 +68,11 @@ function updateDisplay(val) {
 }
 
 function updateHistory(val) {
+    if( clear_history == true ){
+        history = '';
+        $('.history').text(history);
+        clear_history = false;
+    } 
     if (Number.isInteger(+val)) {
         history += val;
         $('.history').text(history);
