@@ -14,6 +14,9 @@ $(document).ready(function() {
             case 'clear':
                 clearAll()
                 break;
+            case 'pos-neg':
+                oppositeSign();
+                break;
         }
     })
 });
@@ -32,7 +35,7 @@ function handleNumber(num) {
 function handleOperator(opr) {
     if (operator === '') {
         operator = opr;
-        updateHistory(operator);
+        updateHistory(operator);      
     } else if (history.substr(-1) != ' ') {
         handleTotal();
         operator = opr;
@@ -42,24 +45,8 @@ function handleOperator(opr) {
 }
 
 function handleTotal() {
-    switch (operator) {
-        case '+':
-            total = +num1 + +num2;
-            updateDisplay(total);
-            break;
-        case '-':
-            total = +num1 - +num2;
-            updateDisplay(total);
-            break;
-        case 'x':
-            total = +num1 * +num2;
-            updateDisplay(total);
-            break;
-        case '/':
-            total = +num1 / +num2;
-            updateDisplay(total);
-            break;
-    }
+    total = calculate(+num1, +num2);
+    updateDisplay(total);
     updateVariables();
 }
 
@@ -77,8 +64,21 @@ function updateHistory(val) {
         history += val;
         $('.history').text(history);
     } else if (val != '=') {
-        $('.history').text(history += ` ${val} `);
+        $('.history').text(history += " " + val + " ");
     }
+}
+
+function calculate(num1, num2) {
+    switch (operator) {
+        case '+':
+            return num1 + num2;
+        case '-':
+            return num1 - num2;
+        case 'x':
+            return num1 * num2;
+        case '/':
+            return num1 / num2;
+    } 
 }
 
 function updateVariables() {
