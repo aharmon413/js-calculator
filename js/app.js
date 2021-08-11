@@ -37,17 +37,13 @@ function handleOperator(opr) {
         operator = opr;
         updateHistory(operator);      
     } else if (history.substr(-1) != ' ') {
-        handleTotal();
+        total = calculate(+num1, +num2);
+        updateDisplay(total);
+        updateVariables();
         operator = opr;
         updateHistory(operator);
         clear_history = (operator === '=');
     }
-}
-
-function handleTotal() {
-    total = calculate(+num1, +num2);
-    updateDisplay(total);
-    updateVariables();
 }
 
 function updateDisplay(val) {
