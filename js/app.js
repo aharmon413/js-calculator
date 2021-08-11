@@ -18,6 +18,8 @@ $(document).ready(function() {
                 oppositeSign();
                 break;
         }
+        //debug
+        //console.log(`num1 = ${num1} num2 = ${num2} operator = ${operator} total = ${total} history = ${history} clear_history = ${clear_history} `)
     })
 });
 
@@ -86,4 +88,20 @@ function clearAll() {
     num1 = '', num2 = '', operator = '', total = '', history = '';
     updateDisplay('0');
     $('.history').text('0');
+}
+
+function oppositeSign() {
+    if (num1 === '') { return; } //do nothing if the current number is 0
+    if (operator === '') {
+        let previousValue = num1; 
+        num1 *= -1;
+        updateDisplay(num1);
+        history = (history.replace(new RegExp (previousValue + '$'), num1));
+    } else {
+        let previousValue = num2;
+        num2 *= -1;
+        updateDisplay(num2);
+        history = history.replace(new RegExp (previousValue + '$'), num2)
+    }
+    $('.history').text(history);
 }
