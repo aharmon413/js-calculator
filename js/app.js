@@ -2,22 +2,38 @@ class Calculator {
     constructor() {
         this.init();
     }
-    // call app.calculator.init() when clear key is pressed to reset values to the default empty state
     init() {
         this.num1 = '';
         this.num2 = '';
         this.operator = '';
         this.total = '';
-        // this.history = ''; // not sure if I want this to be an array or string yet
+        this.onFirstNum = true;
+        // this.history = '';
     }
-    addNumber(num) {
-        this.operator ? num2 += num 
-            : num1 += num; 
+    bindOnInputReceived(callback){
+        this.onInputReceived = callback;
     }
-    addOperator(opr) {
-        if (!this.operator) { 
-            this.operator = opr 
+    appendNumber(num) {
+        if (this.onFirstNum) {
+            this.num1 += num;
+        } else if (this.total) {
+            this.init();
+            this.num1 += num;
+        } else {
+            this.num2 += num;
         }
+        this.onInputReceived(this.num1, this.operator, this.num2, this.total);
+        //console.log(this.num1, this.num2);
+    }
+    setOperator(opr) {
+        if (this.onFirstNum && opr != '=') { 
+            this.operator = opr;
+            this.onFirstNum = false;
+        } else if (opr === '=') {
+            this.total = this.calculate(+this.num1, this.operator, +this.num2);
+        }
+        this.onInputReceived(this.num1, this.operator, this.num2, this.total);
+        //console.log(this.operator, this.total);
     }
     calculate(a, opr, b) {
         switch (opr) {
@@ -39,42 +55,65 @@ class Calculator {
 
 class Display {
     constructor() {
-        this.display = $('.display');
+        this.input = $('.input');
         //this.history = $('.history');
     }
     bindNumberHandler(handler) {
         $('.number').click(function(e) {
-            console.log('a number was clicked!');
+            //console.log('a number was clicked!');
+            handler(e.target.innerHTML);
             }
         )
     }
     bindOperatorHandler(handler) {
         $('.operator').click(function(e) {
-            console.log('an operator was clicked!');
+            //console.log('an operator was clicked!');
+            handler(e.target.innerHTML);
             }
         )
     }
     bindClearHandler(handler) {
-        $('.clear').click(
-
-            )
+        $('.clear').click(() => {
+            //console.log('clear was clicked!');
+            this.input.text('0');
+            handler();
+            }   
+        )
+    }
+    updateDisplay(num1, opr, num2, total) {
+        if (total !== '') {
+            this.input.text(total);
+            //console.log('logging the total');
+        } else if (opr && num2) {
+            this.input.text(num2);
+            //console.log('logging num2');
+        } else {
+            this.input.text(num1);
+            //console.log('logging num1')
+        }
     }
 }
+
 class Controller {
     constructor(calculator, display) {
         this.calculator = calculator;
         this.display = display;
 
+        this.calculator.bindOnInputReceived(this.onInputReceived);
         this.display.bindNumberHandler(this.handleNumber);
         this.display.bindOperatorHandler(this.handleOperator);
+        this.display.bindClearHandler(this.handleClear);
+    }
+    onInputReceived = (num1, opr, num2, total) => {
+        this.display.updateDisplay(num1, opr, num2, total);
     }
     handleNumber = num => {
-        this.calculator.addNumber(num);
+        this.calculator.appendNumber(num);
     }
     handleOperator = opr => {
-        this.calculator.addOperator(opr);
+        this.calculator.setOperator(opr);
     }
-    clearAll = () => {
+    handleClear = () => {
         this.calculator.init();
     }
 }
