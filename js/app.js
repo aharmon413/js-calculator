@@ -8,7 +8,7 @@ class Calculator {
         this.operator = '';
         this.total = '';
         this.onFirstNum = true;
-        // this.history = '';
+        //this.history = '';
     }
     bindOnInputReceived(callback){
         this.onInputReceived = callback;
@@ -16,24 +16,32 @@ class Calculator {
     appendNumber(num) {
         if (this.onFirstNum) {
             this.num1 += num;
-        } else if (this.total) {
+            this.onInputReceived(this.num1);
+        } else if (this.operator === '=') {
             this.init();
             this.num1 += num;
+            this.onInputReceived(this.num1);
         } else {
             this.num2 += num;
+            this.onInputReceived(this.num2);
         }
-        this.onInputReceived(this.num1, this.operator, this.num2, this.total);
-        //console.log(this.num1, this.num2);
+        //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum}`);
     }
     setOperator(opr) {
         if (this.onFirstNum && opr != '=') { 
-            this.operator = opr;
+            if (this.num1 === '') {this.num1 = '0'};
             this.onFirstNum = false;
-        } else if (opr === '=') {
+        } else if (this.operator === '=') {
             this.total = this.calculate(+this.num1, this.operator, +this.num2);
+            this.onInputReceived(this.total);
+        } else if (this.num2) {
+            this.total = this.calculate(+this.num1, this.operator, +this.num2);
+            this.num1 = this.total;
+            this.num2 = '';
+            this.onInputReceived(this.total);
         }
-        this.onInputReceived(this.num1, this.operator, this.num2, this.total);
-        //console.log(this.operator, this.total);
+        this.operator = opr;
+        //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum}`);
     }
     calculate(a, opr, b) {
         switch (opr) {
@@ -80,17 +88,8 @@ class Display {
             }   
         )
     }
-    updateDisplay(num1, opr, num2, total) {
-        if (total !== '') {
-            this.input.text(total);
-            //console.log('logging the total');
-        } else if (opr && num2) {
-            this.input.text(num2);
-            //console.log('logging num2');
-        } else {
-            this.input.text(num1);
-            //console.log('logging num1')
-        }
+    updateDisplay(valueToDisplay) {
+        this.input.text(valueToDisplay);
     }
 }
 
@@ -104,8 +103,8 @@ class Controller {
         this.display.bindOperatorHandler(this.handleOperator);
         this.display.bindClearHandler(this.handleClear);
     }
-    onInputReceived = (num1, opr, num2, total) => {
-        this.display.updateDisplay(num1, opr, num2, total);
+    onInputReceived = (valueToDisplay) => {
+        this.display.updateDisplay(valueToDisplay);
     }
     handleNumber = num => {
         this.calculator.appendNumber(num);
