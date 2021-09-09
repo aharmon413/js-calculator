@@ -1,107 +1,125 @@
-let num1 = '', num2 = '', operator = '', total = '', history = '', clear_history = false;
-
-$(document).ready(function() {
-    $('button').on('click', function(e) {
-        let btn = e.target.innerHTML;
-        switch (e.target.className) {
-            case 'number':
-                handleNumber(btn);
+class Calculator {
+    constructor() {
+        this.init();
+    }
+    init() {
+        this.num1 = '';
+        this.num2 = '';
+        this.operator = '';
+        this.total = '';
+        this.history = '';
+        this.onFirstNum = true;
+    }
+    bindOnInputReceived(callback){
+        this.onInputReceived = callback;
+    }
+    appendNumber(num) {
+        if (this.operator === '=') {this.init();} // start over if user presses a number without an operator to chain it to the existing equation
+        this.updateHistoryString(num);
+        if (this.onFirstNum) {
+            this.num1 += num;
+            this.onInputReceived(this.num1, this.history);
+        } else {
+            this.num2 += num;
+            this.onInputReceived(this.num2, this.history);
+        }
+        //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum} history: ${this.history}`); //debug
+    }
+    setOperator(opr) {
+        if (this.history.substr(-1) === ' ' || this.num1 === '') {return};
+        this.updateHistoryString(opr);
+        if (this.onFirstNum && opr != '=') { 
+            if (this.num1 === '') {this.num1 = '0'}; // user didn't input a first number
+            this.onFirstNum = false;
+        } else if (this.num2) {
+            this.total = this.calculate(+this.num1, this.operator, +this.num2);
+            this.num1 = this.total;
+            this.num2 = '';
+        }
+        this.onInputReceived(this.total || this.num1, this.history);
+        this.operator = opr;
+        //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum} history: ${this.history}`); //debug
+    }
+    updateHistoryString(value) {
+        if (Number.isInteger(+value)) {
+            this.history += value;
+        } else {
+            if (value != '=') {this.history += ` ${value} `;}; // Equals sign doesn't appear in history string
+        }
+    }
+    calculate(a, opr, b) {
+        switch (opr) {
+            case '+':
+                return a+b;
                 break;
-            case 'operator':
-            case 'equals':
-                handleOperator(btn);
+            case '-':
+                return a-b;
                 break;
-            case 'clear':
-                clearAll()
+            case 'x':
+                return a*b;
                 break;
-            case 'pos-neg':
-                oppositeSign();
+            case '/':
+                return a/b;
                 break;
         }
-        //debug
-        //console.log(`num1 = ${num1} num2 = ${num2} operator = ${operator} total = ${total} history = ${history} clear_history = ${clear_history} `)
-    })
-});
-
-function handleNumber(num) {
-    if (operator === '') {
-        num1 += num;
-        updateDisplay(num1);
-    } else {
-        num2 += num;
-        updateDisplay(num2);
-    }
-    updateHistory(num);
-}
-
-function handleOperator(opr) {
-    if (operator === '') {
-        operator = opr;
-        updateHistory(operator);      
-    } else if (history.substr(-1) != ' ') {
-        total = calculate(+num1, +num2);
-        updateDisplay(total);
-        updateVariables();
-        operator = opr;
-        updateHistory(operator);
-        clear_history = (operator === '=');
     }
 }
 
-function updateDisplay(val) {
-    $('.input').text(val);
-}
-
-function updateHistory(val) {
-    if( clear_history == true ){
-        history = '';
-        $('.history').text(history);
-        clear_history = false;
-    } 
-    if (Number.isInteger(+val)) {
-        history += val;
-        $('.history').text(history);
-    } else if (val != '=') {
-        $('.history').text(history += " " + val + " ");
+class Display {
+    constructor() {
+        this.input = $('.input');
+        this.history = $('.history');
+    }
+    bindNumberHandler(handler) {
+        $('.number').click(function(e) {
+            handler(e.target.innerHTML);
+            }
+        )
+    }
+    bindOperatorHandler(handler) {
+        $('.operator').click(function(e) {
+            handler(e.target.innerHTML);
+            }
+        )
+    }
+    bindClearHandler(handler) {
+        $('.clear').click(() => {
+            this.input.text('0');
+            this.history.text('0');
+            handler();
+            }
+        )
+    }
+    updateDisplay(valueToDisplay, history) {
+        this.input.text(valueToDisplay);
+        this.history.text(history);
     }
 }
 
-function calculate(num1, num2) {
-    switch (operator) {
-        case '+':
-            return num1 + num2;
-        case '-':
-            return num1 - num2;
-        case 'x':
-            return num1 * num2;
-        case '/':
-            return num1 / num2;
-    } 
-}
+class Controller {
+    constructor(calculator, display) {
+        this.calculator = calculator;
+        this.display = display;
 
-function updateVariables() {
-    num1 = total;
-    num2 = '';
-}
-
-function clearAll() {
-    num1 = '', num2 = '', operator = '', total = '', history = '';
-    updateDisplay('0');
-    $('.history').text('0');
-}
-
-function oppositeSign() {
-    if (num1 === '') { return; } //do nothing if the current number is 0
-    if (operator === '') {
-        let previousValue = num1; 
-        num1 *= -1;
-        updateDisplay(num1);
-        history = (history.replace(new RegExp (previousValue + '$'), num1));
-    } else {
-        let previousValue = num2;
-        num2 *= -1;
-        updateDisplay(num2);
-        history = history.replace(new RegExp (previousValue + '$'), num2)
+        this.calculator.bindOnInputReceived(this.onInputReceived);
+        this.display.bindNumberHandler(this.handleNumber);
+        this.display.bindOperatorHandler(this.handleOperator);
+        this.display.bindClearHandler(this.handleClear);
     }
-    $('.history').text(history);
+    onInputReceived = (valueToDisplay, history) => {
+        this.display.updateDisplay(valueToDisplay, history);
+    }
+    handleNumber = num => {
+        this.calculator.appendNumber(num);
+    }
+    handleOperator = opr => {
+        this.calculator.setOperator(opr);
+    }
+    handleClear = () => {
+        this.calculator.init();
+    }
 }
+
+$(document).ready(function() {
+    const app = new Controller(new Calculator(), new Display());
+})
