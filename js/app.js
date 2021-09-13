@@ -29,7 +29,6 @@ class Calculator {
         if (this.history.substr(-1) === ' ' || this.num1 === '') {return};
         this.updateHistoryString(opr);
         if (this.onFirstNum && opr != '=') { 
-            if (this.num1 === '') {this.num1 = '0'}; // user didn't input a first number
             this.onFirstNum = false;
         } else if (this.num2) {
             this.total = this.calculate(+this.num1, this.operator, +this.num2);
@@ -40,8 +39,11 @@ class Calculator {
         this.operator = opr;
         //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum} history: ${this.history}`); //debug
     }
-    updateHistoryString(value) {
-        if (Number.isInteger(+value)) {
+    updateHistoryString(value, replace = false) {
+        if (replace) {
+            this.history = this.history.replace(new RegExp (value + '$'), this.num2 || this.num1);
+            this.onInputReceived(this.num2 || this.num1, this.history);
+        } else if (Number.isInteger(+value)) {
             this.history += value;
         } else {
             if (value != '=') {this.history += ` ${value} `;}; // Equals sign doesn't appear in history string
@@ -62,6 +64,12 @@ class Calculator {
                 return a/b;
                 break;
         }
+    }
+    reverseSign() {
+        if (this.history.substr(-1) === ' ') {return}; // don't do anything if previously pressed key was an operator
+        let previousValue = (this.num2 || this.num1);
+        this.onFirstNum ? this.num1 *= -1 : this.num2 *= -1;
+        if (previousValue != 0) {this.updateHistoryString(previousValue, true)};
     }
 }
 
@@ -90,6 +98,11 @@ class Display {
             }
         )
     }
+    bindSignHandler(handler) {
+        $('.pos-neg').click(() => {
+            handler();
+        })
+    }
     updateDisplay(valueToDisplay, history) {
         this.input.text(valueToDisplay);
         this.history.text(history);
@@ -105,6 +118,7 @@ class Controller {
         this.display.bindNumberHandler(this.handleNumber);
         this.display.bindOperatorHandler(this.handleOperator);
         this.display.bindClearHandler(this.handleClear);
+        this.display.bindSignHandler(this.handleSign);
     }
     onInputReceived = (valueToDisplay, history) => {
         this.display.updateDisplay(valueToDisplay, history);
@@ -117,6 +131,9 @@ class Controller {
     }
     handleClear = () => {
         this.calculator.init();
+    }
+    handleSign = () => {
+        this.calculator.reverseSign();
     }
 }
 
