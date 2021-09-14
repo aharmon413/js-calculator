@@ -15,14 +15,24 @@ class Calculator {
     }
     appendNumber(num) {
         if (this.operator === '=') {this.init();} // start over if user presses a number without an operator to chain it to the existing equation
-        this.updateHistoryString(num);
         if (this.onFirstNum) {
-            this.num1 += num;
-            this.onInputReceived(this.num1, this.history);
+            if (this.num1 === '' && num === '.') {
+                this.num1 = '0.';
+                this.updateHistoryString(this.num1);
+            } else if (Number.isInteger(+num) || !String(this.num1).includes('.')) { 
+                this.num1 += num;
+                this.updateHistoryString(num);
+            }   
         } else {
-            this.num2 += num;
-            this.onInputReceived(this.num2, this.history);
+            if (this.num2 === '' && num === '.') {
+                this.num2 = '0.';
+                this.updateHistoryString(this.num2);
+            } else if (Number.isInteger(+num) || !String(this.num2).includes('.')) {
+                this.num2 += num;
+                this.updateHistoryString(num);
+            }   
         }
+        this.onInputReceived(this.num2 || this.num1, this.history);
         //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum} history: ${this.history}`); //debug
     }
     setOperator(opr) {
@@ -31,7 +41,7 @@ class Calculator {
         if (this.onFirstNum && opr != '=') { 
             this.onFirstNum = false;
         } else if (this.num2) {
-            this.total = this.calculate(+this.num1, this.operator, +this.num2);
+            this.total = String(this.calculate(+this.num1, this.operator, +this.num2));
             this.num1 = this.total;
             this.num2 = '';
         }
@@ -42,8 +52,7 @@ class Calculator {
     updateHistoryString(value, replace = false) {
         if (replace) {
             this.history = this.history.replace(new RegExp (value + '$'), this.num2 || this.num1);
-            this.onInputReceived(this.num2 || this.num1, this.history);
-        } else if (Number.isInteger(+value)) {
+        } else if (Number.isInteger(+value) || value.includes('.')) {
             this.history += value;
         } else {
             if (value != '=') {this.history += ` ${value} `;}; // Equals sign doesn't appear in history string
@@ -52,26 +61,29 @@ class Calculator {
     calculate(a, opr, b) {
         switch (opr) {
             case '+':
-                return a+b;
+                return (a+b).toPrecision(10) / 1; // dividing by one removes any trailing zeroes
                 break;
             case '-':
-                return a-b;
+                return (a-b).toPrecision(10) / 1;
                 break;
             case 'x':
-                return a*b;
+                return (a*b).toPrecision(10) / 1; 
                 break;
             case '/':
-                return a/b;
+                return (a/b).toPrecision(10) / 1;
                 break;
         }
     }
     reverseSign() {
-        if (this.history.substr(-1) === ' ') {return}; // don't do anything if previously pressed key was an operator
         let previousValue = (this.num2 || this.num1);
-        this.onFirstNum ? this.num1 *= -1 : this.num2 *= -1;
-        if (previousValue != 0) {this.updateHistoryString(previousValue, true)};
+        // don't do anything if previously pressed key was an operator or current value is 0
+        if (previousValue != 0 && this.history.substr(-1) != ' ') {
+            this.onFirstNum ? this.num1 *= -1 : this.num2 *= -1;
+            this.updateHistoryString(previousValue, true);
+            this.onInputReceived(this.num2 || this.num1, this.history);
+        }
     }
-}
+};
 
 class Display {
     constructor() {
