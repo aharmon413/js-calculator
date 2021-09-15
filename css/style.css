@@ -145,7 +145,7 @@ footer a:focus, footer a:hover {
 }
 /** No triangles on smaller devices **/
 @media (max-width: 767px) {
-    .top-triangle svg, .bottom-triangle svg {
+    .top-triangle, .bottom-triangle {
         display:none;
     }
 }
