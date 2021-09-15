@@ -181,5 +181,6 @@ class Controller {
 }
 
 $(document).ready(function() {
+    $('.content-wrapper').hide().fadeIn(750);
     const app = new Controller(new Calculator(), new Display());
 })
