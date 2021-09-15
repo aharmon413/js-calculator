@@ -19,7 +19,7 @@ class Calculator {
             if (this.num1 === '' && num === '.') {
                 this.num1 = '0.';
                 this.updateHistoryString(this.num1);
-            } else if (Number.isInteger(+num) || !String(this.num1).includes('.')) { 
+            } else if (Number.isInteger(+num) || !this.num1.includes('.')) { 
                 this.num1 += num;
                 this.updateHistoryString(num);
             }   
@@ -27,13 +27,34 @@ class Calculator {
             if (this.num2 === '' && num === '.') {
                 this.num2 = '0.';
                 this.updateHistoryString(this.num2);
-            } else if (Number.isInteger(+num) || !String(this.num2).includes('.')) {
+            } else if (Number.isInteger(+num) || !this.num2.includes('.')) {
                 this.num2 += num;
                 this.updateHistoryString(num);
             }   
         }
         this.onInputReceived(this.num2 || this.num1, this.history);
         //console.log(`num1: ${this.num1} num2: ${this.num2} opr: ${this.operator} total: ${this.total} onFirstNum: ${this.onFirstNum} history: ${this.history}`); //debug
+    }
+    removeNumber() {
+        let previousValue = (this.num2 || this.num1);
+        if (this.history.substr(-1) != ' ') {
+            if (this.onFirstNum) {
+                previousValue = this.num1;
+                this.num1 = this.num1.slice(0, -1);
+                console.log(this.num1);
+                if (this.num1 === '-') {this.num1 = ''}; // remove lone negative signs
+            } else {
+                previousValue = this.num2;
+                this.num2 = this.num2.slice(0, -1);
+                if (this.num2 === '-') {this.num2 = ''};
+            }
+            this.updateHistoryString(previousValue, true);
+            if (this.history === '') {
+                this.onInputReceived('0', '0');
+            } else {
+                this.onInputReceived(this.num2 || this.num1, this.history);
+            }
+        }
     }
     setOperator(opr) {
         if (this.history.substr(-1) === ' ' || this.num1 === '') {return};
@@ -51,7 +72,8 @@ class Calculator {
     }
     updateHistoryString(value, replace = false) {
         if (replace) {
-            this.history = this.history.replace(new RegExp (value + '$'), this.num2 || this.num1);
+            this.onFirstNum ? this.history = this.history.replace(new RegExp (value + '$'), this.num1)
+            : this.history = this.history.replace(new RegExp (value + '$'), this.num2);
         } else if (Number.isInteger(+value) || value.includes('.')) {
             this.history += value;
         } else {
@@ -78,7 +100,7 @@ class Calculator {
         let previousValue = (this.num2 || this.num1);
         // don't do anything if previously pressed key was an operator or current value is 0
         if (previousValue != 0 && this.history.substr(-1) != ' ') {
-            this.onFirstNum ? this.num1 *= -1 : this.num2 *= -1;
+            this.onFirstNum ? this.num1 = String(this.num1 * -1) : this.num2 = String(this.num2 * -1);
             this.updateHistoryString(previousValue, true);
             this.onInputReceived(this.num2 || this.num1, this.history);
         }
@@ -115,6 +137,11 @@ class Display {
             handler();
         })
     }
+    bindRemoveNumber(handler) {
+        $('.delete').click(() => {
+            handler();
+        })
+    }
     updateDisplay(valueToDisplay, history) {
         this.input.text(valueToDisplay);
         this.history.text(history);
@@ -131,6 +158,7 @@ class Controller {
         this.display.bindOperatorHandler(this.handleOperator);
         this.display.bindClearHandler(this.handleClear);
         this.display.bindSignHandler(this.handleSign);
+        this.display.bindRemoveNumber(this.handleDelete);
     }
     onInputReceived = (valueToDisplay, history) => {
         this.display.updateDisplay(valueToDisplay, history);
@@ -146,6 +174,9 @@ class Controller {
     }
     handleSign = () => {
         this.calculator.reverseSign();
+    }
+    handleDelete = () => {
+        this.calculator.removeNumber();
     }
 }
 
