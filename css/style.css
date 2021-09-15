@@ -8,7 +8,7 @@
     --teal:hsla(188, 62%, 43%, 1);
     --teal-green:hsla(182, 71%, 20%, 1);
     --dark-teal-green:hsla(194, 66%, 15%, 1);
-    --spearmint:hsla(160, 44%, 72%, 1);
+    --spearmint:hsla(159, 44%, 72%, 1);
     --mint:hsla(138, 100%, 93%, 1);
     --light-orange:hsla(39, 97%, 60%, 1);
 }
@@ -20,7 +20,7 @@
 body {
     background-color:var(--spearmint);
 }
-.base {
+.content-wrapper {
     background-color:var(--teal);
     width:20.3125em; /* 325px */
     height:31.25em; /* 500px */
@@ -96,4 +96,56 @@ button:active {
 }
 .number {
     background-color:var(--dark-teal-green);
+}
+footer {
+    color:hsla(0, 0%, 0%, 1));
+    opacity:.5;
+    font-family:sans-serif;
+    text-align:center;
+    padding-top:5px;
+    line-height:1.25;
+}
+footer a {
+    color:var(--dark-teal-green);
+    cursor:pointer;
+}
+footer a:focus, footer a:hover {
+    color:hsla(194, 66%, 35%, 1);
+}
+.top-triangle, .bottom-triangle {
+    position:absolute;
+    left:0;
+    width:100%;
+    line-height:0;
+}
+.top-triangle {
+    top:0;
+}
+.bottom-triangle {
+    bottom:0;
+    transform:rotate(180deg);
+}
+.top-triangle svg, .bottom-triangle svg{
+    position:relative;
+    display:block;
+    width:calc(100% + 1.3px);
+    height:150px;
+    transform:rotateY(180deg);
+    filter:drop-shadow(8px 8px 5px hsla(182, 71%, 20%, .3));
+}
+.top-triangle .shape-fill, .bottom-triangle .shape-fill {
+    fill:hsla(138, 100%, 93%, .65);
+}
+/** Adjusting size of triangles on tablet devices **/
+@media (min-width: 768px) and (max-width: 1023px) {
+    .top-triangle svg, .bottom-triangle svg {
+        width:calc(100% + 1.3px);
+        height:115px;
+    }
+}
+/** No triangles on smaller devices **/
+@media (max-width: 767px) {
+    .top-triangle svg, .bottom-triangle svg {
+        display:none;
+    }
 }
