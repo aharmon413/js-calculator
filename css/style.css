@@ -98,7 +98,7 @@ button:active {
     background-color:var(--dark-teal-green);
 }
 footer {
-    color:hsla(0, 0%, 0%, 1));
+    color:hsla(0, 0%, 0%, 1);
     opacity:.5;
     font-family:sans-serif;
     text-align:center;
