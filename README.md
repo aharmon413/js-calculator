@@ -13,8 +13,7 @@ sign, delete/backspace, and clear buttons.
 * jQuery
 
 ## Challenges & Solutions
-This calculator was my first "real" JavaScript project, so there was much learning to be done here. The biggest roadblock I ran into was about halfway through the project. While I had a calculator that
-was basically functional, but the code was very unorganized and it was difficult to expand and add new functionalities without majorly breaking something else in the process.
+This calculator was my first "real" JavaScript project, so there was much learning to be done here. The biggest roadblock I ran into was about halfway through the project. While I had a calculator that was basically functional, the code was very unorganized and it was difficult to expand and add new functionalities without majorly breaking something else in the process.
 
 I ended up making the tough decision to scrap most of what I had written so far and tackle it again with a different approach. After some research, I decided to implement an MVC
 design pattern to neatly seperate the business and display logic for better organization. I saw the difference in ease of development almost immediately.
