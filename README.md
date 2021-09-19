@@ -1,6 +1,6 @@
 # JavaScript Calculator 
 ![Screenshot of the calculator](https://user-images.githubusercontent.com/83358042/133934554-33440f16-33fd-4925-970d-57d1bc9cd0cf.png)
-( [View live demo](https://calculator.amberharmon.com/) )\
+[View live demo](https://calculator.amberharmon.com/)\
 \
 A simple calculator written in (mostly) vanilla JavaScript. It performs the four basic mathematical operations and displays the history of your current equation.
 It also has decimal point, positive/negative 
